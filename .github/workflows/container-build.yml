@@ -1,0 +1,59 @@
+name: Container Build CI
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - client/**
+      - server/**
+      - .github/workflows/container-build.yml
+  pull_request:
+    paths:
+      - client/**
+      - server/**
+      - .github/workflows/container-build.yml
+  workflow_dispatch:
+
+jobs:
+  build-client:
+    name: Build Client Container
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build client image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./client
+          file: ./client/Dockerfile
+          push: false
+          tags: ubjh-client:ci
+          cache-from: type=gha,scope=client
+          cache-to: type=gha,mode=max,scope=client
+
+  build-server:
+    name: Build Server Container
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build server image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./server
+          file: ./server/Dockerfile
+          push: false
+          tags: ubjh-server:ci
+          cache-from: type=gha,scope=server
+          cache-to: type=gha,mode=max,scope=server
