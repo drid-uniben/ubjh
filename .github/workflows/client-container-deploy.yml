@@ -1,0 +1,43 @@
+name: Client Container Deploy
+
+"on":
+  push:
+    branches:
+      - staging
+    paths:
+      - client/**
+      - .github/workflows/client-container-deploy.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Login to GHCR
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push frontend image
+        run: |
+          IMAGE="ghcr.io/drid-uniben/ubjh-client"
+
+          docker buildx build \
+            --push \
+            -t $IMAGE:${GITHUB_SHA} \
+            -t $IMAGE:latest \
+            -f client/Dockerfile \
+            client
