@@ -180,6 +180,10 @@ class AuthorController {
       const { token } = req.params;
       const { name, faculty, affiliation, orcid } = req.body;
 
+      if(typeof token !== 'string') {
+        throw new BadRequestError('Invitation token must be a string');
+      }
+
       logger.info(
         `Author profile completion attempt with token: ${token.substring(0, 8)}...`
       );
@@ -316,6 +320,10 @@ class AuthorController {
       }
 
       const { id } = req.params;
+
+      if(typeof id !== 'string') {
+        throw new BadRequestError('Author ID must be a string');
+      }
 
       // Validate ObjectId format
       if (!Types.ObjectId.isValid(id)) {

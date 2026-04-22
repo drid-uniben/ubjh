@@ -66,7 +66,7 @@ class AuthController {
         success: true,
         accessToken: tokens.accessToken,
         user: {
-          id: (user._id as ObjectId).toString(),
+          id: user._id.toString(),
           name: user.name,
           email: user.email,
           role: user.role,
@@ -127,7 +127,7 @@ class AuthController {
         success: true,
         accessToken: tokens.accessToken,
         user: {
-          id: (user._id as ObjectId).toString(),
+          id: user._id.toString(),
           name: user.name,
           email: user.email,
           role: user.role,
@@ -186,7 +186,7 @@ class AuthController {
         success: true,
         accessToken: tokens.accessToken,
         user: {
-          id: (user._id as ObjectId).toString(),
+          id: user._id.toString(),
           name: user.name,
           email: user.email,
           role: user.role,
@@ -213,7 +213,7 @@ class AuthController {
       }
 
       // Include all required properties in the token payload
-      const userId = user._id as ObjectId;
+      const userId = user._id;
       const tokens = await tokenService.rotateRefreshToken(refreshToken, {
         userId: userId.toString(),
         email: user.email,
