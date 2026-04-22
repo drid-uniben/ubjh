@@ -1,5 +1,4 @@
 import { Request, Response } from 'express';
-import User, { UserRole } from '../../model/user.model';
 import Manuscript, {
   ManuscriptStatus,
 } from '../../Manuscript_Submission/models/manuscript.model';
@@ -7,34 +6,9 @@ import { NotFoundError } from '../../utils/customErrors';
 import asyncHandler from '../../utils/asyncHandler';
 import logger from '../../utils/logger';
 import emailService from '../../services/email.service';
-import Review, {
-  ReviewStatus,
-  ReviewType,
-} from '../../Review_System/models/review.model';
 import mongoose from 'mongoose';
 // import userService from '../../services/user.service';
 // import IncompleteCoAuthor from '../../Manuscript_Submission/models/incompleteCoAuthor.model';
-
-// Interface for the new manuscript submission request
-interface IManuscriptRequest {
-  title: string;
-  abstract: string;
-  keywords: string[];
-  submitter: {
-    name: string;
-    email: string;
-    faculty: string;
-    affiliation: string;
-    orcid?: string;
-  }; // Primary author
-  coAuthors?: {
-    email?: string;
-    name?: string;
-    faculty?: string;
-    affiliation?: string;
-    orcid?: string;
-  }[]; // List of co-author emails and names
-}
 
 interface IManuscriptResponse {
   success: boolean;
@@ -47,7 +21,7 @@ class ReviseController {
   // Revise a manuscript
   reviseManuscript = asyncHandler(
     async (
-      req: Request<{ id: string }, {}, IManuscriptRequest>,
+      req: Request<{ id: string }, {}, any>,
       res: Response<IManuscriptResponse>
     ): Promise<void> => {
       const { id } = req.params;
@@ -137,7 +111,6 @@ class ReviseController {
       }
 
       // Reset status to submitted for re-review
-      const isMinorRevision = originalManuscript.revisionType === 'minor';
       originalManuscript.status = ManuscriptStatus.SUBMITTED;
 
       await originalManuscript.save();

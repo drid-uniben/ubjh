@@ -178,7 +178,7 @@ export default function ReviewGuideline() {
                                 <div>
                                     <h3 className="font-semibold text-gray-800 mb-2">Confidential Comments to Editor</h3>
                                     <p className="text-sm md:text-base text-gray-700">
-                                        Use this section for any concerns or recommendations you wish to share only with the editor, such as questions about plagiarism, ethical concerns, or your overall assessment of the manuscript's suitability for the journal.
+                                        Use this section for any concerns or recommendations you wish to share only with the editor, such as questions about plagiarism, ethical concerns, or your overall assessment of the manuscript&apos;s suitability for the journal.
                                     </p>
                                 </div>
                             </div>
@@ -210,7 +210,7 @@ export default function ReviewGuideline() {
                                 </div>
                                 <div className="flex items-start">
                                     <span className="text-purple-600 mr-2">•</span>
-                                    <p><strong>Objectivity:</strong> Provide an unbiased evaluation based solely on the manuscript's scholarly merit.</p>
+                                    <p><strong>Objectivity:</strong> Provide an unbiased evaluation based solely on the manuscript&apos;s scholarly merit.</p>
                                 </div>
                                 <div className="flex items-start">
                                     <span className="text-purple-600 mr-2">•</span>

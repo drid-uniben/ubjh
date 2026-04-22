@@ -20,12 +20,6 @@ interface EligibleReviewer {
   areaOfSpecialization?: string;
 }
 
-interface IReassignReviewResponse {
-  success: boolean;
-  message?: string;
-  data?: any;
-}
-
 class ReassignReviewController {
   reassignReview = asyncHandler(
     async (
@@ -117,7 +111,9 @@ class ReassignReviewController {
 
       review.reviewer = newReviewer._id as mongoose.Types.ObjectId;
       review.status = ReviewStatus.IN_PROGRESS;
-      review.dueDate = new Date(Date.now() + 21 * 24 * 60 * 60 * 1000); // 3 weeks
+      review.dueDate = new Date(
+        Date.now() + (21 * 24 * 60 * 60 * 1000)
+      ); // 3 weeks
 
       await review.save();
 

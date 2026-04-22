@@ -6,7 +6,7 @@ export const ReviewType = {
   RECONCILIATION: 'reconciliation',
 } as const;
 
-export type ReviewType = (typeof ReviewType)[keyof typeof ReviewType];
+export type ReviewTypeValue = (typeof ReviewType)[keyof typeof ReviewType];
 
 export const ReviewStatus = {
   IN_PROGRESS: 'in_progress',
@@ -14,7 +14,7 @@ export const ReviewStatus = {
   OVERDUE: 'overdue',
 } as const;
 
-export type ReviewStatus = (typeof ReviewStatus)[keyof typeof ReviewStatus];
+export type ReviewStatusValue = (typeof ReviewStatus)[keyof typeof ReviewStatus];
 
 export interface IScores {
   originality: number;
@@ -29,7 +29,7 @@ export interface IScores {
 export interface IReview extends Document {
   manuscript: Types.ObjectId;
   reviewer: Types.ObjectId;
-  reviewType: ReviewType;
+  reviewType: ReviewTypeValue;
   scores: IScores;
   totalScore: number;
   comments: {
@@ -37,7 +37,7 @@ export interface IReview extends Document {
     confidentialCommentsToEditor?: string;
   };
   reviewDecision?: ReviewDecision;
-  status: ReviewStatus;
+  status: ReviewStatusValue;
   dueDate: Date;
   completedAt?: Date;
   createdAt: Date;

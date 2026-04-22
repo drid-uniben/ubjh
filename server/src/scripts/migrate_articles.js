@@ -11,7 +11,7 @@ const ARTICLES_TO_MIGRATE = [
     title:
       'JOURNAL SELECTION PRACTICES AS DETERMINANTS OF ACADEMIC LIBRARIAN’S RESEARCH PRODUCTIVITY IN UNIVERSITIES IN SOUTH-SOUTH, NIGERIA',
     abstract:
-      "Research productivity is an important condition for the recognition, promotion and career advancement of librarians. However, previous studies have established low level of research productivity of librarians in South-South, Nigeria, making it a subject of concern to the university and library management. While existing studies have analyzed bibliometric data of librarians' publications, the influence of journal selection practices (choice of journal, discoverability, scope of journal, impact factor, indexing, peer review process)  on research productivity has not been fully measured in the existing body of knowledge. Therefore, this study investigated the influence of journal selection practices as determinants of academic librarians research productivity in South-South, Nigeria. The study adopted survey research design. The population comprised 229 academic librarians in 30 universities in South-South, Nigeria. Total enumeration sampling technique was used for the study. A structured and validated questionnaire was used for data collection. Cronbach’s alpha reliability coefficients for the constructs ranged from 0.82 to 0.88 The response rate was 86.4%. Data were analyzed using descriptive and inferential (simple and multiple regression) statistics at 5% level of significance. Findings revealed journal selection practices had a significant influence on research productivity (Adj.R2 = 0.63, F(5, 192) = 203.47, p < 0.05). Of the indicators of journal selection practices: choice of journal (β = 0.31, t(192) = 4.80, p < 0.05), discoverability (β = 0.60, t(192) = 12.35, p < 0.05) and scope of journal (β = 0.53, t(192) = 8.47, p < 0.05) positively and significantly influenced research productivity. Indexing (β = -0.20, t(192) = -0.22, p > 0.05) and peer review process (β = -0.04, t(192) = -0.14, p > 0.05) had no significant influence on research productivity. The study concluded that journal selection practices affected research productivity of academic librarians in universities in South-South, Nigeria. It was recommended that the management of universities and library management, should periodically organize workshops and seminars on acceptable journal selection practices for librarians.",
+      'Research productivity is an important condition for the recognition, promotion and career advancement of librarians. However, previous studies have established low level of research productivity of librarians in South-South, Nigeria, making it a subject of concern to the university and library management. While existing studies have analyzed bibliometric data of librarians\' publications, the influence of journal selection practices (choice of journal, discoverability, scope of journal, impact factor, indexing, peer review process)  on research productivity has not been fully measured in the existing body of knowledge. Therefore, this study investigated the influence of journal selection practices as determinants of academic librarians research productivity in South-South, Nigeria. The study adopted survey research design. The population comprised 229 academic librarians in 30 universities in South-South, Nigeria. Total enumeration sampling technique was used for the study. A structured and validated questionnaire was used for data collection. Cronbach’s alpha reliability coefficients for the constructs ranged from 0.82 to 0.88 The response rate was 86.4%. Data were analyzed using descriptive and inferential (simple and multiple regression) statistics at 5% level of significance. Findings revealed journal selection practices had a significant influence on research productivity (Adj.R2 = 0.63, F(5, 192) = 203.47, p < 0.05). Of the indicators of journal selection practices: choice of journal (β = 0.31, t(192) = 4.80, p < 0.05), discoverability (β = 0.60, t(192) = 12.35, p < 0.05) and scope of journal (β = 0.53, t(192) = 8.47, p < 0.05) positively and significantly influenced research productivity. Indexing (β = -0.20, t(192) = -0.22, p > 0.05) and peer review process (β = -0.04, t(192) = -0.14, p > 0.05) had no significant influence on research productivity. The study concluded that journal selection practices affected research productivity of academic librarians in universities in South-South, Nigeria. It was recommended that the management of universities and library management, should periodically organize workshops and seminars on acceptable journal selection practices for librarians.',
     keywords: [
       'Academic librarians',
       'Journal selection practices',
@@ -124,8 +124,9 @@ for (let i = 0; i < ARTICLES_TO_MIGRATE.length; i++) {
       email: articleData.authorEmail.toLowerCase().trim(),
       role: 'author',
     });
-    if (!author)
+    if (!author) {
       throw new Error(`Author not found: ${articleData.authorEmail}`);
+    }
 
     // 2. Find co-authors
     const coAuthorIds = [];
@@ -141,20 +142,22 @@ for (let i = 0; i < ARTICLES_TO_MIGRATE.length; i++) {
     const volume = db.Volumes.findOne({
       volumeNumber: articleData.volumeNumber,
     });
-    if (!volume)
+    if (!volume) {
       throw new Error(
         `Volume ${articleData.volumeNumber} not found. Create it first in the admin panel.`
       );
+    }
 
     // 4. Find issue — use its publishDate for the article
     const issue = db.Issues.findOne({
       volume: volume._id,
       issueNumber: articleData.issueNumber,
     });
-    if (!issue)
+    if (!issue) {
       throw new Error(
         `Issue ${articleData.issueNumber} not found for Volume ${articleData.volumeNumber}. Create it first.`
       );
+    }
 
     // 5. Duplicate check
     const duplicate = db.Articles.findOne({
@@ -162,7 +165,7 @@ for (let i = 0; i < ARTICLES_TO_MIGRATE.length; i++) {
       issue: issue._id,
     });
     if (duplicate) {
-      print(`  ⚠ SKIPPED — article already exists in this issue`);
+      print('  ⚠ SKIPPED — article already exists in this issue');
       skipCount++;
       continue;
     }
@@ -181,10 +184,7 @@ for (let i = 0; i < ARTICLES_TO_MIGRATE.length; i++) {
       volume: volume._id,
       issue: issue._id,
       articleType: articleData.articleType || 'research_article',
-      pages:
-        articleData.pages?.start && articleData.pages?.end
-          ? { start: articleData.pages.start, end: articleData.pages.end }
-          : undefined,
+      pages: undefined,
       views: { count: 0, viewers: [] },
       downloads: { count: 0, downloaders: [] },
       citationCount: 0,
@@ -212,6 +212,13 @@ for (let i = 0; i < ARTICLES_TO_MIGRATE.length; i++) {
       createdAt: now,
       updatedAt: now,
     };
+
+    if (articleData.pages?.start && articleData.pages?.end) {
+      article.pages = {
+        start: articleData.pages.start,
+        end: articleData.pages.end,
+      };
+    }
 
     db.Articles.insertOne(article);
     successCount++;

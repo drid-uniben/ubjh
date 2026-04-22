@@ -41,7 +41,6 @@ export default function AdminLoginPage() {
     try {
       await login(email, password);
       // Success handling is done in AuthContext
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       console.error('Login submission error:', err);
       // Error is set in context

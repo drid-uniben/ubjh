@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import Volume, { IVolume } from '../models/volume.model';
+import Volume from '../models/volume.model';
 import { BadRequestError, NotFoundError } from '../../utils/customErrors';
 import asyncHandler from '../../utils/asyncHandler';
 import logger from '../../utils/logger';
@@ -25,8 +25,11 @@ class VolumeController {
     const existingVolume = await Volume.findOne({
       volumeNumber: parsedVolumeNumber,
     });
-    if (existingVolume)
-      throw new BadRequestError(`Volume ${parsedVolumeNumber} already exists`);
+    if (existingVolume) {
+      throw new BadRequestError(
+        `Volume ${parsedVolumeNumber} already exists`
+      );
+    }
 
     const volume = new Volume({
       volumeNumber: parsedVolumeNumber,
@@ -121,10 +124,11 @@ class VolumeController {
           volumeNumber: parsedVolumeNumber,
           _id: { $ne: id },
         });
-        if (conflict)
+        if (conflict) {
           throw new BadRequestError(
             `Volume ${parsedVolumeNumber} already exists`
           );
+        }
         volume.volumeNumber = parsedVolumeNumber;
       }
     }

@@ -631,10 +631,9 @@ class PublicationController {
 
     const article = await Article.findById(id);
     if (!article) throw new NotFoundError('Article not found');
-    if (article.manuscriptId)
-      throw new BadRequestError(
-        'Cannot edit articles from submission workflow here'
-      );
+    if (article.manuscriptId) throw new BadRequestError(
+      'Cannot edit articles from submission workflow here'
+    );
 
     const API = process.env.API_URL || 'http://localhost:3000';
 
@@ -642,12 +641,10 @@ class PublicationController {
     if (abstract) article.abstract = abstract;
     if (keywords !== undefined) {
       article.keywords =
-        typeof keywords === 'string'
-          ? keywords
-              .split(',')
-              .map((k: string) => k.trim())
-              .filter(Boolean)
-          : keywords;
+        typeof keywords === 'string' ? keywords
+          .split(',')
+          .map((k: string) => k.trim())
+          .filter(Boolean) : keywords;
     }
     if (articleType) article.articleType = articleType;
     if (pageStart && pageEnd) {
@@ -688,10 +685,9 @@ class PublicationController {
 
     const article = await Article.findById(id);
     if (!article) throw new NotFoundError('Article not found');
-    if (article.manuscriptId)
-      throw new BadRequestError(
-        'Cannot delete articles from the submission workflow'
-      );
+    if (article.manuscriptId) throw new BadRequestError(
+      'Cannot delete articles from the submission workflow'
+    );
 
     const API = process.env.API_URL || 'http://localhost:3000';
     if (article.pdfFile && article.pdfFile.trim()) {

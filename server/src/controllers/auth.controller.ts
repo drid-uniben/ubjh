@@ -4,7 +4,6 @@ import tokenService from '../services/token.service';
 import { UnauthorizedError } from '../utils/customErrors';
 import asyncHandler from '../utils/asyncHandler';
 import logger from '../utils/logger';
-import { ObjectId } from 'mongoose';
 
 interface IAuthResponse {
   success: boolean;

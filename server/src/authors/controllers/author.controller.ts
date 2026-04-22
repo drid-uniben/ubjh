@@ -155,7 +155,9 @@ class AuthorController {
       await User.create({
         email,
         inviteToken: hashedToken,
-        inviteTokenExpires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
+        inviteTokenExpires: new Date(
+          Date.now() + (30 * 24 * 60 * 60 * 1000)
+        ), // 30 days
         role: UserRole.AUTHOR,
         invitationStatus: 'pending',
         isActive: false,
@@ -180,7 +182,7 @@ class AuthorController {
       const { token } = req.params;
       const { name, faculty, affiliation, orcid } = req.body;
 
-      if(typeof token !== 'string') {
+      if (typeof token !== 'string') {
         throw new BadRequestError('Invitation token must be a string');
       }
 
@@ -321,7 +323,7 @@ class AuthorController {
 
       const { id } = req.params;
 
-      if(typeof id !== 'string') {
+      if (typeof id !== 'string') {
         throw new BadRequestError('Author ID must be a string');
       }
 
@@ -435,7 +437,7 @@ class AuthorController {
       // Update author with new token
       author.inviteToken = hashedToken;
       author.inviteTokenExpires = new Date(
-        Date.now() + 30 * 24 * 60 * 60 * 1000
+        Date.now() + (30 * 24 * 60 * 60 * 1000)
       ); // 30 days
 
       await author.save();

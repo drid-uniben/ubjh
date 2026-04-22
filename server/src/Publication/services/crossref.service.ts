@@ -2,60 +2,6 @@ import axios from 'axios';
 import logger from '../../utils/logger';
 import { IArticle } from '../../Articles/model/article.model';
 
-interface CrossrefMetadata {
-  doi_batch_id: string;
-  timestamp: number;
-  depositor: {
-    depositor_name: string;
-    email_address: string;
-  };
-  registrant: string;
-  journal: {
-    journal_metadata: {
-      full_title: string;
-      abbrev_title?: string;
-      issn: string;
-    };
-    journal_issue: {
-      publication_date: {
-        year: number;
-        month: number;
-        day: number;
-      };
-      journal_volume: {
-        volume: string;
-      };
-      issue: string;
-    };
-  };
-  journal_article: {
-    titles: {
-      title: string;
-    };
-    contributors: Array<{
-      given_name: string;
-      surname: string;
-      sequence: 'first' | 'additional';
-      ORCID?: string;
-      affiliation?: string;
-    }>;
-    publication_date: {
-      year: number;
-      month: number;
-      day: number;
-    };
-    pages?: {
-      first_page: string;
-      last_page: string;
-    };
-    doi_data: {
-      doi: string;
-      resource: string;
-    };
-    abstract?: string;
-  };
-}
-
 class CrossrefService {
   private baseUrl: string;
   private username: string;

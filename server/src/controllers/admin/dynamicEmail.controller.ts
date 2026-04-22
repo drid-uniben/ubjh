@@ -108,7 +108,7 @@ class DynamicEmailController {
   // Preview email with dynamic variables
   previewEmail = asyncHandler(
     async (req: Request, res: Response): Promise<void> => {
-      const { recipientIds, subject, headerTitle, bodyContent } = req.body;
+      const { recipientIds, headerTitle, bodyContent } = req.body;
       const attachments = req.files as Express.Multer.File[] | undefined;
 
       // Robustly handle recipientIds (could be string or array from FormData)
@@ -116,7 +116,7 @@ class DynamicEmailController {
       if (typeof recipientIds === 'string') {
         try {
           ids = JSON.parse(recipientIds);
-        } catch (e) {
+        } catch (_e) {
           ids = recipientIds.split(',').map((id: string) => id.trim());
         }
       } else if (Array.isArray(recipientIds)) {
@@ -198,7 +198,7 @@ class DynamicEmailController {
       if (typeof recipientIds === 'string') {
         try {
           ids = JSON.parse(recipientIds);
-        } catch (e) {
+        } catch (_e) {
           ids = recipientIds.split(',').map((id: string) => id.trim());
         }
       } else if (Array.isArray(recipientIds)) {

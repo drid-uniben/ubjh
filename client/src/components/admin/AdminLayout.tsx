@@ -92,15 +92,87 @@ const bottomItems = [
   },
 ];
 
+interface ArticleDropdownProps {
+  pathname: string;
+  isCollapsed: boolean;
+  isOpen: boolean;
+  onToggle: () => void;
+  onNavigate: () => void;
+}
+
+function ArticleDropdown({
+  pathname,
+  isCollapsed,
+  isOpen,
+  onToggle,
+  onNavigate,
+}: ArticleDropdownProps) {
+  const articleLinks = [
+    { name: "Publication", href: "/admin/articles/publication" },
+    { name: "Volume", href: "/admin/articles/volume" },
+    { name: "Issues", href: "/admin/articles/issues" },
+  ];
+
+  return (
+    <div className="space-y-1">
+      <button
+        onClick={onToggle}
+        className={cn(
+          "flex items-center justify-between w-full px-3 py-2 rounded-lg text-sm font-medium transition-colors",
+          isOpen
+            ? "bg-journal-maroon-dark text-white"
+            : "text-journal-rose hover:bg-journal-maroon-dark hover:text-white",
+          isCollapsed && "justify-center"
+        )}
+        title={isCollapsed ? "Articles" : undefined}
+      >
+        <div className="flex items-center space-x-3">
+          <Newspaper className="h-5 w-5 flex-shrink-0" />
+          {!isCollapsed && <span>Articles</span>}
+        </div>
+        {!isCollapsed && (
+          <ChevronRight
+            className={cn(
+              "h-5 w-5 transition-transform",
+              isOpen && "transform rotate-90"
+            )}
+          />
+        )}
+      </button>
+      {isOpen && (
+        <div className="pl-4 space-y-1">
+          {articleLinks.map((link) => (
+            <Link
+              key={link.name}
+              href={link.href}
+              className={cn(
+                "flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
+                pathname === link.href
+                  ? "bg-journal-maroon-dark text-white"
+                  : "text-journal-rose hover:bg-journal-maroon-dark hover:text-white",
+                isCollapsed && "justify-center"
+              )}
+              onClick={onNavigate}
+            >
+              {!isCollapsed && <span>{link.name}</span>}
+            </Link>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 interface AdminLayoutProps {
   children: React.ReactNode;
 }
 
 function AdminLayoutComponent({ children }: AdminLayoutProps) {
+  const pathname = usePathname();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [mobileMenuPathname, setMobileMenuPathname] = useState(pathname);
   const [isArticleDropdownOpen, setIsArticleDropdownOpen] = useState(false);
-  const pathname = usePathname();
   const { user, logout } = useAuth();
 
   const dynamicRoutes = [
@@ -118,9 +190,17 @@ function AdminLayoutComponent({ children }: AdminLayoutProps) {
     }
   };
 
-  useEffect(() => {
+  const closeMobileMenu = () => {
     setIsMobileMenuOpen(false);
-  }, [pathname]);
+  };
+
+  const openMobileMenu = () => {
+    setMobileMenuPathname(pathname);
+    setIsMobileMenuOpen(true);
+  };
+
+  const isMobileMenuVisible =
+    isMobileMenuOpen && mobileMenuPathname === pathname;
 
   useEffect(() => {
     const handleOutsideClick = (event: MouseEvent) => {
@@ -128,24 +208,24 @@ function AdminLayoutComponent({ children }: AdminLayoutProps) {
       const menuButton = document.getElementById("mobile-menu-button");
 
       if (
-        isMobileMenuOpen &&
+        isMobileMenuVisible &&
         sidebar &&
         !sidebar.contains(event.target as Node) &&
         menuButton &&
         !menuButton.contains(event.target as Node)
       ) {
-        setIsMobileMenuOpen(false);
+        closeMobileMenu();
       }
     };
 
-    if (isMobileMenuOpen) {
+    if (isMobileMenuVisible) {
       document.addEventListener("mousedown", handleOutsideClick);
     }
 
     return () => {
       document.removeEventListener("mousedown", handleOutsideClick);
     };
-  }, [isMobileMenuOpen]);
+  }, [isMobileMenuVisible]);
 
   const logoutItem = {
     name: "Logout",
@@ -153,65 +233,13 @@ function AdminLayoutComponent({ children }: AdminLayoutProps) {
     icon: LogOut,
   };
 
-  const ArticleDropdown = () => {
-    const articleLinks = [
-      { name: "Publication", href: "/admin/articles/publication" },
-      { name: "Volume", href: "/admin/articles/volume" },
-      { name: "Issues", href: "/admin/articles/issues" },
-    ];
-  
-    return (
-      <div className="space-y-1">
-        <button
-          onClick={() => setIsArticleDropdownOpen(!isArticleDropdownOpen)}
-          className={cn(
-            "flex items-center justify-between w-full px-3 py-2 rounded-lg text-sm font-medium transition-colors",
-            isArticleDropdownOpen
-              ? "bg-journal-maroon-dark text-white"
-              : "text-journal-rose hover:bg-journal-maroon-dark hover:text-white"
-          )}
-        >
-          <div className="flex items-center space-x-3">
-            <Newspaper className="h-5 w-5 flex-shrink-0" />
-            <span>Articles</span>
-          </div>
-          <ChevronRight
-            className={cn(
-              "h-5 w-5 transition-transform",
-              isArticleDropdownOpen && "transform rotate-90"
-            )}
-          />
-        </button>
-        {isArticleDropdownOpen && (
-          <div className="pl-4 space-y-1">
-            {articleLinks.map((link) => (
-              <Link
-                key={link.name}
-                href={link.href}
-                className={cn(
-                  "flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
-                  pathname === link.href
-                    ? "bg-journal-maroon-dark text-white"
-                    : "text-journal-rose hover:bg-journal-maroon-dark hover:text-white"
-                )}
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                <span>{link.name}</span>
-              </Link>
-            ))}
-          </div>
-        )}
-      </div>
-    );
-  };
-
   return (
     <div className="flex h-screen bg-gray-50">
       {/* Mobile overlay */}
-      {isMobileMenuOpen && (
+      {isMobileMenuVisible && (
         <div
           className="fixed inset-0 bg-gray-600 bg-opacity-75 z-40 lg:hidden"
-          onClick={() => setIsMobileMenuOpen(false)}
+          onClick={closeMobileMenu}
           aria-hidden="true"
         />
       )}
@@ -221,7 +249,7 @@ function AdminLayoutComponent({ children }: AdminLayoutProps) {
         id="mobile-sidebar"
         className={cn(
           "fixed inset-y-0 left-0 z-50 w-64 bg-journal-maroon border-r border-journal-maroon-dark flex flex-col transition-transform duration-300 ease-in-out lg:hidden",
-          isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
+          isMobileMenuVisible ? "translate-x-0" : "-translate-x-full"
         )}
       >
         <div className="p-4 border-b border-journal-maroon-dark flex items-center justify-between">
@@ -242,7 +270,7 @@ function AdminLayoutComponent({ children }: AdminLayoutProps) {
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => setIsMobileMenuOpen(false)}
+            onClick={closeMobileMenu}
             className="p-1 h-8 w-8 text-white hover:bg-journal-maroon-dark"
           >
             <X className="h-5 w-5" />
@@ -290,7 +318,13 @@ function AdminLayoutComponent({ children }: AdminLayoutProps) {
                 </Link>
               );
             })}
-            <ArticleDropdown />
+            <ArticleDropdown
+              pathname={pathname}
+              isCollapsed={false}
+              isOpen={isArticleDropdownOpen}
+              onToggle={() => setIsArticleDropdownOpen(!isArticleDropdownOpen)}
+              onNavigate={closeMobileMenu}
+            />
           </nav>
 
           <nav className="space-y-1">
@@ -306,7 +340,7 @@ function AdminLayoutComponent({ children }: AdminLayoutProps) {
                       ? "bg-journal-maroon-dark text-white"
                       : "text-journal-rose hover:bg-journal-maroon-dark hover:text-white"
                   )}
-                  onClick={() => setIsMobileMenuOpen(false)}
+                  onClick={closeMobileMenu}
                 >
                   <item.icon className="h-5 w-5 flex-shrink-0" />
                   <span>{item.name}</span>
@@ -316,7 +350,7 @@ function AdminLayoutComponent({ children }: AdminLayoutProps) {
 
             <button
               onClick={() => {
-                setIsMobileMenuOpen(false);
+                closeMobileMenu();
                 logoutItem.action();
               }}
               className="flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors w-full text-left text-journal-rose hover:bg-journal-maroon-dark hover:text-white"
@@ -457,7 +491,7 @@ function AdminLayoutComponent({ children }: AdminLayoutProps) {
             id="mobile-menu-button"
             type="button"
             className="text-gray-500 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-journal-maroon p-2 -ml-2 rounded-md"
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            onClick={openMobileMenu}
             aria-label="Toggle mobile menu"
           >
             <Menu className="h-6 w-6" />

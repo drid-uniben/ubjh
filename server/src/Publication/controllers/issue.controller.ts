@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import Issue, { IIssue } from '../models/issue.model';
+import Issue from '../models/issue.model';
 import Volume from '../models/volume.model';
 import { BadRequestError, NotFoundError } from '../../utils/customErrors';
 import asyncHandler from '../../utils/asyncHandler';
@@ -138,10 +138,11 @@ class IssueController {
           issueNumber: parsedIssueNumber,
           _id: { $ne: id },
         });
-        if (conflict)
+        if (conflict) {
           throw new BadRequestError(
             `Issue ${parsedIssueNumber} already exists for this volume`
           );
+        }
         issue.issueNumber = parsedIssueNumber;
       }
     }

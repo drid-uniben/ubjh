@@ -13,7 +13,7 @@ import asyncHandler from '../../utils/asyncHandler';
 
 class ReconciliationController {
   handleDiscrepancy = asyncHandler(
-    async (req: Request, res: Response, next: NextFunction) => {
+    async (req: Request, res: Response, _next: NextFunction) => {
       const { manuscriptId } = req.params;
 
       const reviews = await Review.find({
@@ -76,7 +76,9 @@ class ReconciliationController {
         throw new NotFoundError('No eligible reconciliation reviewer found');
       }
 
-      const dueDate = new Date(Date.now() + 21 * 24 * 60 * 60 * 1000); // 3 weeks
+      const dueDate = new Date(
+        Date.now() + (21 * 24 * 60 * 60 * 1000)
+      ); // 3 weeks
 
       const reconciliationReview = new Review({
         manuscript: manuscriptId,

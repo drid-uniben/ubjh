@@ -6,7 +6,6 @@ import {
   overdueReviewTemplate,
   reconciliationAssignmentTemplate,
   reviewAssignmentTemplate,
-  manuscriptNotificationTemplate,
   submissionConfirmationTemplate,
   reviewerInvitationTemplate,
   reviewerCredentialsTemplate,
