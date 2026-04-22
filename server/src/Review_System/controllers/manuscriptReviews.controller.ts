@@ -226,6 +226,10 @@ class ManuscriptReviewsController {
       const user = (req as GetManuscriptReviewDetailsRequest).user;
       const { manuscriptId } = req.params;
 
+      if(typeof manuscriptId !== 'string') {
+        throw new BadRequestError('Manuscript ID must be a string');
+      }
+
       if (!mongoose.Types.ObjectId.isValid(manuscriptId)) {
         throw new BadRequestError('Invalid manuscript ID format');
       }
