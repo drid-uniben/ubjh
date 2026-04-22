@@ -7,6 +7,7 @@ import Manuscript, {
 import Review, {
   ReviewStatus,
   ReviewType,
+  ReviewStatusValue,
   IReview,
 } from '../models/review.model';
 import asyncHandler from '../../utils/asyncHandler';
@@ -42,7 +43,7 @@ interface PopulatedReview extends Omit<IReview, 'manuscript' | 'reviewer'> {
   };
   dueDate: Date;
   _id: Types.ObjectId;
-  status: ReviewStatus;
+  status: ReviewStatusValue;
   save(): Promise<IReview>;
 }
 

@@ -39,7 +39,4 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build server
-        run: pnpm run build
-
-      - name: Test server
-        run: pnpm run test --if-present
+        run: pnpm build

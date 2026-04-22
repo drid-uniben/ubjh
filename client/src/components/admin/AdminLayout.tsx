@@ -442,7 +442,13 @@ function AdminLayoutComponent({ children }: AdminLayoutProps) {
                 </Link>
               );
             })}
-            <ArticleDropdown />
+            <ArticleDropdown
+              pathname={pathname}
+              isCollapsed={isCollapsed}
+              isOpen={isArticleDropdownOpen}
+              onToggle={() => setIsArticleDropdownOpen(!isArticleDropdownOpen)}
+              onNavigate={closeMobileMenu}
+            />
           </nav>
 
           <nav className="space-y-1">
