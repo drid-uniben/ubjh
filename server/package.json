@@ -13,9 +13,9 @@
     "worker": "ts-node src/worker.ts"
   },
   "keywords": [],
-  "author": "Raymond Omoyakhi <raymondomoyakhi@gmail.com>",
+  "author": "Raymond Omoyakhi <raymondomoyakhi@gmail.com>, Emmanuel Osalotioman Osazuwa <osalotioman@gmail.com>",
   "license": "ISC",
-  "description": "A journal publication website for UNIBEN Journal of Science & Technology (UJST).",
+  "description": "A journal publication website for UNIBEN Journal of Humanities (UBJH).",
   "dependencies": {
     "agenda": "^5.0.0",
     "axios": "^1.15.0",
