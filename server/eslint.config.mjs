@@ -4,6 +4,7 @@ import typescriptParser from "@typescript-eslint/parser";
 import typescriptEslint from "@typescript-eslint/eslint-plugin";
 
 export default [
+  eslint.configs.recommended,
   {
     languageOptions: {
       parser: typescriptParser,
@@ -14,9 +15,6 @@ export default [
           jsx: true,
         },
       },
-    },
-    plugins: {
-      typescriptEslint: typescriptEslint,
     },
     ignores: ["node_modules/*", "dist/*"],
     rules: {
@@ -60,9 +58,36 @@ export default [
     },
   },
   {
-    files: ["**/*.js", "**/*.ts"],
-    languageOptions: { sourceType: "commonjs" },
+    files: ["**/*.js"],
+    languageOptions: {
+      sourceType: "commonjs",
+      globals: {
+        ...globals.node,
+        db: "readonly",
+        print: "readonly",
+      },
+    },
   },
-  { languageOptions: { globals: globals.node } },
-  eslint.configs.recommended,
+  {
+    files: ["**/*.ts"],
+    languageOptions: {
+      globals: globals.node,
+    },
+    plugins: {
+      "@typescript-eslint": typescriptEslint,
+    },
+    rules: {
+      "no-undef": "off",
+      "no-unused-vars": "off",
+      "no-invalid-this": "off",
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        {
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+          caughtErrorsIgnorePattern: "^_",
+        },
+      ],
+    },
+  },
 ];

@@ -18,7 +18,7 @@ const errorHandler = (
   err: AppError | MongoError | MulterError | Error,
   req: Request,
   res: Response,
-  next: NextFunction
+  _next: NextFunction
 ) => {
   const error = err as AppError;
   error.statusCode = error.statusCode || 500;

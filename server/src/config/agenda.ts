@@ -175,21 +175,21 @@ agenda.define(
       const issue = article.issue as any;
 
       // Generate metadata (these will be served via API endpoints)
-      const googleScholarMeta = indexingService.generateGoogleScholarMetaTags(
+      const _googleScholarMeta = indexingService.generateGoogleScholarMetaTags(
         article,
         authors,
         volume,
         issue
       );
 
-      const oaipmhRecord = indexingService.generateOAIPMHRecord(
+      const _oaipmhRecord = indexingService.generateOAIPMHRecord(
         article,
         authors,
         volume,
         issue
       );
 
-      const jsonld = indexingService.generateJSONLD(
+      const _jsonld = indexingService.generateJSONLD(
         article,
         authors,
         volume,

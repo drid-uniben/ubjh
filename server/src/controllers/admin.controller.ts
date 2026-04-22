@@ -599,7 +599,9 @@ class AdminController {
           isActive: true,
         });
         if (admin) {
-          const dueDate = new Date(Date.now() + 21 * 24 * 60 * 60 * 1000);
+          const dueDate = new Date(
+            Date.now() + (21 * 24 * 60 * 60 * 1000)
+          );
           const review = new Review({
             manuscript: manuscript._id,
             reviewer: admin._id,
@@ -625,7 +627,9 @@ class AdminController {
         }
       } else if (manuscript.originalReviewer) {
         // Assign to original reviewer for major revision
-        const dueDate = new Date(Date.now() + 21 * 24 * 60 * 60 * 1000);
+        const dueDate = new Date(
+          Date.now() + (21 * 24 * 60 * 60 * 1000)
+        );
         const review = new Review({
           manuscript: manuscript._id,
           reviewer: manuscript.originalReviewer,

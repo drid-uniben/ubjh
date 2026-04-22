@@ -47,14 +47,14 @@ class ManuscriptReviewsController {
     async (
       req: Request,
       res: Response<IManuscriptReviewsResponse>,
-      next: NextFunction
+      _next: NextFunction
     ): Promise<void> => {
       const user = (req as GetManuscriptReviewsRequest).user;
 
       const page = parseInt((req.query.page || '1').toString());
       const limit = parseInt((req.query.limit || '10').toString());
       const skip = (page - 1) * limit;
-      const { status, faculty, discrepancy } = req.query;
+      const { status, discrepancy } = req.query;
 
       const pipeline: any[] = [
         {
@@ -226,7 +226,7 @@ class ManuscriptReviewsController {
       const user = (req as GetManuscriptReviewDetailsRequest).user;
       const { manuscriptId } = req.params;
 
-      if(typeof manuscriptId !== 'string') {
+      if (typeof manuscriptId !== 'string') {
         throw new BadRequestError('Manuscript ID must be a string');
       }
 

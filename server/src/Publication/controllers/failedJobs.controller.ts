@@ -145,7 +145,7 @@ class FailedJobsController {
       const user = (req as AdminAuthenticatedRequest).user;
 
       // Use atomic update instead of loop
-      const updateResult = await FailedJob.updateMany(
+      const _updateResult = await FailedJob.updateMany(
         { resolved: false },
         {
           $inc: { attemptCount: 1 },

@@ -47,9 +47,10 @@ interface ReviewerLayoutProps {
 }
 
 function ReviewerLayoutComponent({ children }: ReviewerLayoutProps) {
+  const pathname = usePathname();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const pathname = usePathname();
+  const [mobileMenuPathname, setMobileMenuPathname] = useState(pathname);
   const { user, logout } = useAuth();
 
   const dynamicRoutes = ["/reviewer/assignments"];
@@ -62,9 +63,17 @@ function ReviewerLayoutComponent({ children }: ReviewerLayoutProps) {
     }
   };
 
-  useEffect(() => {
+  const closeMobileMenu = () => {
     setIsMobileMenuOpen(false);
-  }, [pathname]);
+  };
+
+  const openMobileMenu = () => {
+    setMobileMenuPathname(pathname);
+    setIsMobileMenuOpen(true);
+  };
+
+  const isMobileMenuVisible =
+    isMobileMenuOpen && mobileMenuPathname === pathname;
 
   useEffect(() => {
     const handleOutsideClick = (event: MouseEvent) => {
@@ -72,24 +81,24 @@ function ReviewerLayoutComponent({ children }: ReviewerLayoutProps) {
       const menuButton = document.getElementById("mobile-menu-button");
 
       if (
-        isMobileMenuOpen &&
+        isMobileMenuVisible &&
         sidebar &&
         !sidebar.contains(event.target as Node) &&
         menuButton &&
         !menuButton.contains(event.target as Node)
       ) {
-        setIsMobileMenuOpen(false);
+        closeMobileMenu();
       }
     };
 
-    if (isMobileMenuOpen) {
+    if (isMobileMenuVisible) {
       document.addEventListener("mousedown", handleOutsideClick);
     }
 
     return () => {
       document.removeEventListener("mousedown", handleOutsideClick);
     };
-  }, [isMobileMenuOpen]);
+  }, [isMobileMenuVisible]);
 
   const logoutItem = {
     name: "Logout",
@@ -100,10 +109,10 @@ function ReviewerLayoutComponent({ children }: ReviewerLayoutProps) {
   return (
     <div className="flex h-screen bg-gray-50">
       {/* Mobile overlay */}
-      {isMobileMenuOpen && (
+      {isMobileMenuVisible && (
         <div
           className="fixed inset-0 bg-gray-600 bg-opacity-75 z-40 lg:hidden"
-          onClick={() => setIsMobileMenuOpen(false)}
+          onClick={closeMobileMenu}
           aria-hidden="true"
         />
       )}
@@ -113,7 +122,7 @@ function ReviewerLayoutComponent({ children }: ReviewerLayoutProps) {
         id="mobile-sidebar"
         className={cn(
           "fixed inset-y-0 left-0 z-50 w-64 bg-journal-maroon border-r border-journal-maroon-dark flex flex-col transition-transform duration-300 ease-in-out lg:hidden",
-          isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
+          isMobileMenuVisible ? "translate-x-0" : "-translate-x-full"
         )}
       >
         <div className="p-4 border-b border-journal-maroon-dark flex items-center justify-between">
@@ -134,7 +143,7 @@ function ReviewerLayoutComponent({ children }: ReviewerLayoutProps) {
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => setIsMobileMenuOpen(false)}
+            onClick={closeMobileMenu}
             className="p-1 h-8 w-8 text-white hover:bg-journal-maroon-dark"
           >
             <X className="h-5 w-5" />
@@ -175,7 +184,7 @@ function ReviewerLayoutComponent({ children }: ReviewerLayoutProps) {
                       ? "bg-journal-maroon-dark text-white"
                       : "text-journal-rose hover:bg-journal-maroon-dark hover:text-white"
                   )}
-                  onClick={() => setIsMobileMenuOpen(false)}
+                  onClick={closeMobileMenu}
                 >
                   <item.icon className="h-5 w-5 flex-shrink-0" />
                   <span>{item.name}</span>
@@ -188,7 +197,7 @@ function ReviewerLayoutComponent({ children }: ReviewerLayoutProps) {
 
             <button
               onClick={() => {
-                setIsMobileMenuOpen(false);
+                closeMobileMenu();
                 logoutItem.action();
               }}
               className="flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors w-full text-left text-journal-rose hover:bg-journal-maroon-dark hover:text-white"
@@ -308,7 +317,7 @@ function ReviewerLayoutComponent({ children }: ReviewerLayoutProps) {
             id="mobile-menu-button"
             type="button"
             className="text-gray-500 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-journal-maroon p-2 -ml-2 rounded-md"
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            onClick={openMobileMenu}
             aria-label="Toggle mobile menu"
           >
             <Menu className="h-6 w-6" />

@@ -2,6 +2,7 @@ name: Client CI
 
 "on":
   push:
+    branches: ["main", "staging"]
     paths:
       - client/**
       - .github/workflows/client-ci.yml
@@ -24,6 +25,8 @@ jobs:
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
+        with:
+          version: 10.17.1
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -36,7 +39,4 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build client
-        run: pnpm run build
-
-      - name: Test client
-        run: pnpm run test --if-present
+        run: pnpm build

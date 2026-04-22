@@ -2,6 +2,7 @@
   "name": "ubjh_server",
   "version": "1.0.0",
   "main": "index.js",
+  "packageManager": "pnpm@10.17.1",
   "scripts": {
     "seed:admin": "ts-node src/scripts/createAdmin.ts",
     "clean": "rimraf dist",

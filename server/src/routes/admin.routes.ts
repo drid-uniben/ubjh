@@ -1,6 +1,5 @@
 import express, { Request } from 'express';
 import adminController from '../controllers/admin.controller';
-import { parseManuscriptRequest } from '../middleware/parseManuscriptRequest';
 import {
   authenticateAdminToken,
   rateLimiter,

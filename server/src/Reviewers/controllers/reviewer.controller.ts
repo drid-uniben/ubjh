@@ -63,7 +63,9 @@ class ReviewerController {
       await User.create({
         email,
         inviteToken: hashedToken,
-        inviteTokenExpires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
+        inviteTokenExpires: new Date(
+          Date.now() + (30 * 24 * 60 * 60 * 1000)
+        ), // 30 days
         role: UserRole.REVIEWER,
         invitationStatus: 'pending',
         isActive: false,
@@ -518,7 +520,7 @@ class ReviewerController {
       // Update reviewer with new token
       reviewer.inviteToken = hashedToken;
       reviewer.inviteTokenExpires = new Date(
-        Date.now() + 30 * 24 * 60 * 60 * 1000
+        Date.now() + (30 * 24 * 60 * 60 * 1000)
       ); // 30 days
 
       await reviewer.save();

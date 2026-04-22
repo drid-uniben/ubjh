@@ -21,7 +21,7 @@ class ArticleAnalyticsController {
       }
 
       // Check if viewer already viewed in last 24 hours
-      const lastDay = new Date(Date.now() - 24 * 60 * 60 * 1000);
+      const lastDay = new Date(Date.now() - (24 * 60 * 60 * 1000));
       const existingView = article.views.viewers.find(
         (viewer) =>
           viewer.identifier === visitorIdentifier && viewer.timestamp > lastDay
@@ -106,7 +106,9 @@ class ArticleAnalyticsController {
       }
 
       const daysAgo = parseInt(period as string);
-      const startDate = new Date(Date.now() - daysAgo * 24 * 60 * 60 * 1000);
+      const startDate = new Date(
+        Date.now() - (daysAgo * 24 * 60 * 60 * 1000)
+      );
 
       // Filter recent views/downloads
       const recentViews = article.views.viewers.filter(
