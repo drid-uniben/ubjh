@@ -32,6 +32,7 @@ import {
   AlertCircle,
   CheckCircle,
   ArrowLeft,
+  Search,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
@@ -52,6 +53,7 @@ export default function ManualArticleUploadPage() {
   const [volumes, setVolumes] = useState<Volume[]>([]);
   const [issues, setIssues] = useState<Issue[]>([]);
   const [authors, setAuthors] = useState<Author[]>([]);
+  const [authorSearch, setAuthorSearch] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -230,6 +232,12 @@ export default function ManualArticleUploadPage() {
     }
   };
 
+  // Filter authors based on search query
+  const filteredAuthors = authors.filter((author) =>
+    author.name.toLowerCase().includes(authorSearch.toLowerCase()) ||
+    author.email.toLowerCase().includes(authorSearch.toLowerCase())
+  );
+
   if (isLoading) {
     return (
       <AdminLayout>
@@ -336,30 +344,56 @@ export default function ManualArticleUploadPage() {
 
               <div className="space-y-2">
                 <Label>Author (Primary) *</Label>
-                <Select
-                  value={formData.authorId}
-                  onValueChange={(value) =>
-                    setFormData((prev) => ({ ...prev, authorId: value }))
-                  }
-                  required
-                >
-                  <SelectTrigger className="border-journal-maroon/20">
-                    <SelectValue placeholder="Select primary author" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {authors.map((author) => (
-                      <SelectItem key={author._id} value={author._id}>
+                <div className="relative mb-2">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Input
+                    placeholder="Search authors..."
+                    value={authorSearch}
+                    onChange={(e) => setAuthorSearch(e.target.value)}
+                    className="pl-9 border-journal-maroon/20"
+                  />
+                </div>
+                <div className="border border-journal-maroon/20 rounded-lg p-3 space-y-2 max-h-48 overflow-y-auto bg-gray-50">
+                  {filteredAuthors.map((author) => (
+                    <div key={author._id} className="flex items-center gap-2">
+                      <input
+                        type="radio"
+                        name="primaryAuthor"
+                        id={`primary-${author._id}`}
+                        checked={formData.authorId === author._id}
+                        onChange={() =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            authorId: author._id,
+                            // Ensure primary author is not in co-authors
+                            coAuthorIds: prev.coAuthorIds.filter(
+                              (id) => id !== author._id,
+                            ),
+                          }))
+                        }
+                        className="cursor-pointer accent-journal-maroon"
+                        required
+                      />
+                      <label
+                        htmlFor={`primary-${author._id}`}
+                        className="text-sm cursor-pointer flex-1"
+                      >
                         {author.name} ({author.email})
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                      </label>
+                    </div>
+                  ))}
+                  {filteredAuthors.length === 0 && (
+                    <p className="text-sm text-gray-500 text-center py-2">
+                      No authors found
+                    </p>
+                  )}
+                </div>
               </div>
 
               <div className="space-y-2">
                 <Label>Co-Authors (Optional)</Label>
                 <div className="border border-journal-maroon/20 rounded-lg p-3 space-y-2 max-h-48 overflow-y-auto bg-gray-50">
-                  {authors.map((author) => (
+                  {filteredAuthors.map((author) => (
                     <div key={author._id} className="flex items-center gap-2">
                       <input
                         type="checkbox"
@@ -387,7 +421,7 @@ export default function ManualArticleUploadPage() {
                         htmlFor={`coauthor-${author._id}`}
                         className="text-sm cursor-pointer flex-1"
                       >
-                        {author.name}
+                        {author.name} ({author.email})
                         {formData.authorId === author._id && (
                           <span className="text-xs text-gray-500 ml-1">
                             (primary)
@@ -396,6 +430,11 @@ export default function ManualArticleUploadPage() {
                       </label>
                     </div>
                   ))}
+                  {filteredAuthors.length === 0 && (
+                    <p className="text-sm text-gray-500 text-center py-2">
+                      No authors found
+                    </p>
+                  )}
                 </div>
               </div>
             </CardContent>
