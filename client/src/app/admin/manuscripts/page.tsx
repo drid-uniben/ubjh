@@ -38,6 +38,7 @@ function usePaginationPersistence() {
 
   // Get current page from URL or localStorage
   const getCurrentPage = useCallback(() => {
+    if (typeof window === 'undefined') return 1;
     const urlPage = searchParams.get('page');
     if (urlPage) {
       return parseInt(urlPage, 10);
@@ -58,15 +59,32 @@ function usePaginationPersistence() {
     if (filters.sort) params.set('sort', filters.sort);
     if (filters.order) params.set('order', filters.order);
 
-    router.push(`${pathname}?${params.toString()}`, { scroll: false });
+    const newQuery = params.toString();
+    const currentQuery = searchParams.toString();
+
+    // Only update if the query has actually changed to avoid redundant history pushes
+    if (newQuery !== currentQuery) {
+      router.push(`${pathname}?${newQuery}`, { scroll: false });
+    }
     
     // Also save to localStorage as backup
-    localStorage.setItem('manuscripts_current_page', page.toString());
-    localStorage.setItem('manuscripts_filters', JSON.stringify(filters));
-  }, [pathname, router]);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('manuscripts_current_page', page.toString());
+      localStorage.setItem('manuscripts_filters', JSON.stringify(filters));
+    }
+  }, [pathname, router, searchParams]);
 
   // Restore filters from URL or localStorage
   const restoreFilters = useCallback(() => {
+    if (typeof window === 'undefined') {
+      return {
+        status: '',
+        faculty: '',
+        sort: 'createdAt',
+        order: 'desc',
+      };
+    }
+
     const urlStatus = searchParams.get('status');
     const urlFaculty = searchParams.get('faculty');
     const urlSort = searchParams.get('sort');
@@ -100,7 +118,7 @@ function usePaginationPersistence() {
       status: '',
       faculty: '',
       sort: 'createdAt',
-      order: 'desc' as 'asc' | 'desc',
+      order: 'desc',
     };
   }, [searchParams]);
 
@@ -113,14 +131,19 @@ function usePaginationPersistence() {
 
 
 function AdminManuscriptsPage() {
-  const { isAuthenticated } = useAuth();    
+  const { isAuthenticated } = useAuth();
+  const router = useRouter();
+  
+  // Use the persistence hook
+  const { getCurrentPage, updateURL, restoreFilters } = usePaginationPersistence();
+
   const [manuscripts, setManuscripts] = useState<Manuscript[]>([]);
   const [faculties, setFaculties] = useState<Faculty[]>([]);
-  const [pagination, setPagination] = useState<PaginationData>({
+  const [pagination, setPagination] = useState<PaginationData>(() => ({
     count: 0,
     totalPages: 1,
-    currentPage: 1
-  });
+    currentPage: getCurrentPage()
+  }));
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
@@ -165,20 +188,9 @@ function AdminManuscriptsPage() {
 
   const [assigningFaculty, setAssigningFaculty] = useState(false);
   const [expandedFaculty, setExpandedFaculty] = useState<string | null>(null);
-  
-  const router = useRouter();
-
-  // Use the persistence hook
-  const { getCurrentPage, updateURL, restoreFilters } = usePaginationPersistence();
 
   // Initialize filters from URL/localStorage
   const [filters, setFilters] = useState<ManuscriptFilters>(() => restoreFilters());
-
-  // Initialize current page from URL/localStorage
-  useEffect(() => {
-    const currentPage = getCurrentPage();
-    setPagination(prev => ({ ...prev, currentPage }));
-  }, [getCurrentPage]);
 
   const [searchQuery, setSearchQuery] = useState('');
 const [searchResults, setSearchResults] = useState<Manuscript[]>([]);
